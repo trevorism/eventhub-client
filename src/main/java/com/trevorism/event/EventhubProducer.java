@@ -9,8 +9,12 @@ import com.trevorism.http.JsonHttpClient;
  */
 public abstract class EventhubProducer<T> implements EventProducer<T> {
 
+    private HttpClient client = new JsonHttpClient();
+
     @Override
     public void sendEvent(String topic, T event) {
+        client.get(EVENT_BASE_URL + "/ping");
+
         String url = buildUrl(topic);
         String json = convertObjectToJson(event);
         String result = emitEvent(url, json);
@@ -20,7 +24,6 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     }
 
     private String emitEvent(String url, String json) {
-        HttpClient client = new JsonHttpClient();
         return client.post(url, json);
     }
 
