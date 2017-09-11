@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public abstract class EventhubProducer<T> implements EventProducer<T> {
 
-    private static final int WAIT_MILLIS = 10000;
+    private static final int WAIT_MILLIS = 15000;
     private HttpClient client = new JsonHttpClient();
     private HeadersHttpClient headersClient = new HeadersJsonHttpClient();
 
