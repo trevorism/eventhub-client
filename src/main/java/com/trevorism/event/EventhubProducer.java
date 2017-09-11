@@ -6,6 +6,7 @@ import com.trevorism.http.JsonHttpClient;
 import com.trevorism.http.headers.HeadersHttpClient;
 import com.trevorism.http.headers.HeadersJsonHttpClient;
 import com.trevorism.http.util.ResponseUtils;
+import com.trevorism.secure.PasswordProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     private static final int WAIT_MILLIS = 15000;
     private HttpClient client = new JsonHttpClient();
     private HeadersHttpClient headersClient = new HeadersJsonHttpClient();
+    private PasswordProvider passwordProvider = new PasswordProvider();
 
     @Override
     public void sendEvent(String topic, T event) {
@@ -69,7 +71,7 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     private String emitCorrelatedEvent(String url, String json, String correlationId) {
         CloseableHttpResponse response = null;
         try {
-            Map<String, String> headersMap = createCorrelationHeader(correlationId);
+            Map<String, String> headersMap = createHeaderMap(correlationId);
             response = headersClient.post(url, json, headersMap);
             return ResponseUtils.getEntity(response);
         }catch (Exception e){
@@ -79,9 +81,10 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
         }
     }
 
-    private Map<String, String> createCorrelationHeader(String correlationId) {
+    private Map<String, String> createHeaderMap(String correlationId) {
         Map<String, String> headersMap = new HashMap<>();
         headersMap.put(HeadersHttpClient.CORRELATION_ID_HEADER_KEY, correlationId);
+        headersMap.put(PasswordProvider.AUTHORIZATION_HEADER, passwordProvider.getPassword());
         return headersMap;
     }
 
