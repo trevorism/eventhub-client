@@ -1,8 +1,6 @@
 package com.trevorism.event;
 
 import com.google.gson.Gson;
-import com.trevorism.http.HttpClient;
-import com.trevorism.http.JsonHttpClient;
 import com.trevorism.http.headers.HeadersHttpClient;
 import com.trevorism.http.headers.HeadersJsonHttpClient;
 import com.trevorism.http.util.ResponseUtils;
@@ -17,8 +15,6 @@ import java.util.Map;
  */
 public abstract class EventhubProducer<T> implements EventProducer<T> {
 
-    private static final int WAIT_MILLIS = 15000;
-    private HttpClient client = new JsonHttpClient();
     private HeadersHttpClient headersClient = new HeadersJsonHttpClient();
     private PasswordProvider passwordProvider = new PasswordProvider();
 
@@ -49,23 +45,35 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     private void ping() {
         try {
             //ping the API to wake it up since it is not always on
-            String pong = client.get(EVENT_BASE_URL + "/ping");
-            if(!"pong".equals(pong))
-                throw new Exception("Unable to ping events");
+            sendPingRequest();
         }catch (Exception e){
             try {
-                Thread.sleep(WAIT_MILLIS);
-                String pong = client.get(EVENT_BASE_URL + "/ping");
-                if(!"pong".equals(pong))
-                    throw new RuntimeException("Unable to ping events after " + WAIT_MILLIS/1000 + " second retry");
-            } catch (InterruptedException ie) {
+                Thread.sleep(getPingWaitMillis());
+                sendPingRequest();
+            } catch (Exception ie) {
                 throw new RuntimeException("Interrupted failure", ie);
             }
         }
     }
 
+    private void throwPingExceptionIfResponseNotPong(String pong, String errorMessage) {
+        if(!"pong".equals(pong))
+            throw new RuntimeException(errorMessage);
+    }
+
+    private void sendPingRequest() {
+        CloseableHttpResponse response = headersClient.get(EVENT_BASE_URL + "/ping", null);
+        String pong = ResponseUtils.getEntity(response);
+        ResponseUtils.closeSilently(response);
+        throwPingExceptionIfResponseNotPong(pong, "Unable to ping events");
+    }
+
     private String emitEvent(String url, String json) {
-        return client.post(url, json);
+        Map<String, String> headersMap = createHeaderMap(null);
+        CloseableHttpResponse response = headersClient.post(url, json, headersMap);
+        String result = ResponseUtils.getEntity(response);
+        ResponseUtils.closeSilently(response);
+        return result;
     }
 
     private String emitCorrelatedEvent(String url, String json, String correlationId) {
@@ -83,7 +91,8 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
 
     private Map<String, String> createHeaderMap(String correlationId) {
         Map<String, String> headersMap = new HashMap<>();
-        headersMap.put(HeadersHttpClient.CORRELATION_ID_HEADER_KEY, correlationId);
+        if(correlationId != null)
+            headersMap.put(HeadersHttpClient.CORRELATION_ID_HEADER_KEY, correlationId);
         headersMap.put(PasswordProvider.AUTHORIZATION_HEADER, passwordProvider.getPassword());
         return headersMap;
     }
@@ -94,4 +103,6 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     }
 
     protected abstract String buildUrl(String topic);
+
+    protected abstract int getPingWaitMillis();
 }

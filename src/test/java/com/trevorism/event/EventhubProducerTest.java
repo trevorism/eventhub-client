@@ -25,6 +25,11 @@ public class EventhubProducerTest {
             protected String buildUrl(String topic) {
                 return "http://trevorism.com";
             }
+
+            @Override
+            protected int getPingWaitMillis() {
+                return 0;
+            }
         };
         producer.sendEvent("testTopic", thing);
     }
