@@ -55,7 +55,7 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
                 Thread.sleep(WAIT_MILLIS);
                 String pong = client.get(EVENT_BASE_URL + "/ping");
                 if(!"pong".equals(pong))
-                    throw new RuntimeException("Unable to ping events after 10 second retry");
+                    throw new RuntimeException("Unable to ping events after " + WAIT_MILLIS/1000 + " second retry");
             } catch (InterruptedException ie) {
                 throw new RuntimeException("Interrupted failure", ie);
             }
