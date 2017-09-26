@@ -1,6 +1,7 @@
 package com.trevorism.event;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.trevorism.http.headers.HeadersHttpClient;
 import com.trevorism.http.headers.HeadersJsonHttpClient;
 import com.trevorism.http.util.ResponseUtils;
@@ -17,6 +18,7 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
 
     private HeadersHttpClient headersClient = new HeadersJsonHttpClient();
     private PasswordProvider passwordProvider = new PasswordProvider();
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
 
     @Override
     public void sendEvent(String topic, T event) {
@@ -98,7 +100,6 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     }
 
     private String convertObjectToJson(T event) {
-        Gson gson = new Gson();
         return gson.toJson(event);
     }
 
