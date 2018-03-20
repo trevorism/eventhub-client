@@ -8,5 +8,8 @@ public interface EventProducer<T> {
     String EVENT_BASE_URL = "https://event.trevorism.com";
 
     void sendEvent(String topic, T event);
-    void sendCorrelatedEvent(String topic, T event, String correlationId);
+    void sendEvent(String topic, T event, String correlationId);
+
+    void validateTopic(String topic);
+
 }

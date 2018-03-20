@@ -16,66 +16,44 @@ import java.util.Map;
  */
 public abstract class EventhubProducer<T> implements EventProducer<T> {
 
-    private HeadersHttpClient headersClient = new HeadersJsonHttpClient();
+    protected HeadersHttpClient headersClient = new HeadersJsonHttpClient();
     private PasswordProvider passwordProvider = new PasswordProvider();
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
 
     @Override
     public void sendEvent(String topic, T event) {
-        ping();
-
-        String url = buildUrl(topic);
-        String json = convertObjectToJson(event);
-        String result = emitEvent(url, json);
-
-        if(!"true".equals(result))
-            throw new EventNotSentException("Unable to successfully send the event");
+        sendEvent(topic, event, null);
     }
 
     @Override
-    public void sendCorrelatedEvent(String topic, T event, String correlationId) {
-        ping();
-
+    public void sendEvent(String topic, T event, String correlationId) {
+        validateTopic(topic);
         String url = buildUrl(topic);
-        String json = convertObjectToJson(event);
+        String json = gson.toJson(event);
         String result = emitCorrelatedEvent(url, json, correlationId);
 
         if(!"true".equals(result))
             throw new EventNotSentException("Unable to successfully send the event");
     }
 
-    private void ping() {
-        try {
-            //ping the API to wake it up since it is not always on
-            sendPingRequest();
-        }catch (Exception e){
-            try {
-                Thread.sleep(getPingWaitMillis());
-                sendPingRequest();
-            } catch (Exception ie) {
-                throw new RuntimeException("Interrupted failure", ie);
-            }
+    @Override
+    public void validateTopic(String topic) {
+        if(topic == null){
+            throw new EventNotSentException("Topic not specified");
+        }
+        if(topic.length() < 3){
+            throw new EventNotSentException("Topic must be at least 3 characters");
+        }
+        if(topic.length() > 255){
+            throw new EventNotSentException("Topic must be less than 256 characters");
+        }
+        if(topic.startsWith("goog")){
+            throw new EventNotSentException("Topic cannot start with 'goog'");
         }
     }
 
-    private void throwPingExceptionIfResponseNotPong(String pong, String errorMessage) {
-        if(!"pong".equals(pong))
-            throw new RuntimeException(errorMessage);
-    }
-
-    private void sendPingRequest() {
-        CloseableHttpResponse response = headersClient.get(EVENT_BASE_URL + "/ping", null);
-        String pong = ResponseUtils.getEntity(response);
-        ResponseUtils.closeSilently(response);
-        throwPingExceptionIfResponseNotPong(pong, "Unable to ping events");
-    }
-
-    private String emitEvent(String url, String json) {
-        Map<String, String> headersMap = createHeaderMap(null);
-        CloseableHttpResponse response = headersClient.post(url, json, headersMap);
-        String result = ResponseUtils.getEntity(response);
-        ResponseUtils.closeSilently(response);
-        return result;
+    private String buildUrl(String topic) {
+        return EVENT_BASE_URL + "/api/" + topic;
     }
 
     private String emitCorrelatedEvent(String url, String json, String correlationId) {
@@ -99,11 +77,5 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
         return headersMap;
     }
 
-    private String convertObjectToJson(T event) {
-        return gson.toJson(event);
-    }
 
-    protected abstract String buildUrl(String topic);
-
-    protected abstract int getPingWaitMillis();
 }
