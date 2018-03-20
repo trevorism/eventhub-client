@@ -10,9 +10,18 @@ public class WorkComplete {
 
     public static final String TOPIC = "workcomplete";
 
-    private String correlationId;
     private String projectName;
     private String serviceName;
+    private String correlationId;
+
+    public WorkComplete() {
+    }
+
+    public WorkComplete(String projectName, String serviceName, String correlationId) {
+        this.projectName = projectName;
+        this.serviceName = serviceName;
+        this.correlationId = correlationId;
+    }
 
     public String getCorrelationId() {
         return correlationId;
@@ -38,8 +47,4 @@ public class WorkComplete {
         this.serviceName = serviceName;
     }
 
-    public void sendEvent(){
-        EventProducer<WorkComplete> eventProducer = new PingingEventProducer<>();
-        eventProducer.sendEvent(TOPIC, this, getCorrelationId());
-    }
 }

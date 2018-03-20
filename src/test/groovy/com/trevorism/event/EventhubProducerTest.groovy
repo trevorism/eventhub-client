@@ -17,7 +17,7 @@ class EventhubProducerTest {
 
     @Test
     void testSendEvent() {
-        EventhubProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
+        EventProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
         eventhubProducer.headersClient = [get: {url, map -> return pingResponse}, post: {url,json,map ->
             assert url == "https://event.trevorism.com/api/testTopic"
             return postResponse
@@ -27,7 +27,7 @@ class EventhubProducerTest {
 
     @Test
     void testSendCorrelatedEvent() {
-        EventhubProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
+        EventProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
         eventhubProducer.headersClient = [get: {url, map -> return pingResponse}, post: {url,json,map ->
             assert url == "https://event.trevorism.com/api/testTopic"
             assert map["X-Correlation-ID"] == "12345"
