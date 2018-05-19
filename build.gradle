@@ -13,14 +13,14 @@ repositories {
 }
 
 dependencies {
-	compile 'com.trevorism:http-utils:1.0.0'
-    compile 'com.trevorism:secure-utils:1.0.0'
+	compile 'com.trevorism:http-utils:1.0.1'
+    compile 'com.trevorism:secure-utils:1.0.1'
 
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
-	compile 'com.google.code.gson:gson:2.8.2'
+	compile 'com.google.code.gson:gson:2.8.4'
 
 	testCompile 'junit:junit:4.12'
-	testCompile 'org.codehaus.groovy:groovy-all:2.4.13'
+	testCompile 'org.codehaus.groovy:groovy-all:2.4.15'
 
 }
 
