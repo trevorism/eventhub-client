@@ -11,14 +11,13 @@ import org.junit.Test
  */
 class EventhubProducerTest {
 
-    private final pingResponse = [getEntity:{new StringEntity("pong")}] as CloseableHttpResponse
-    private final postResponse = [getEntity:{new StringEntity("true")}] as CloseableHttpResponse
-
+    private final pingResponse = [getEntity: { new StringEntity("pong") }] as CloseableHttpResponse
+    private final postResponse = [getEntity: { new StringEntity("true") }] as CloseableHttpResponse
 
     @Test
     void testSendEvent() {
         EventProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
-        eventhubProducer.headersClient = [get: {url, map -> return pingResponse}, post: {url,json,map ->
+        eventhubProducer.headersClient = [get: { url, map -> return pingResponse }, post: { url, json, map ->
             assert url == "https://event.trevorism.com/api/testTopic"
             return postResponse
         }] as HeadersHttpClient
@@ -28,14 +27,12 @@ class EventhubProducerTest {
     @Test
     void testSendCorrelatedEvent() {
         EventProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
-        eventhubProducer.headersClient = [get: {url, map -> return pingResponse}, post: {url,json,map ->
+        eventhubProducer.headersClient = [get: { url, map -> return pingResponse }, post: { url, json, map ->
             assert url == "https://event.trevorism.com/api/testTopic"
             assert map["X-Correlation-ID"] == "12345"
             return postResponse
         }] as HeadersHttpClient
         eventhubProducer.sendEvent("testTopic", new WorkComplete(), "12345")
-
-
     }
 
     @Test(expected = EventNotSentException)

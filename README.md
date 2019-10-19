@@ -1,7 +1,7 @@
 # eventhub-client
 Java client for sending events to [trevorism eventhub](https://github.com/trevorism/eventhub)
 
-Current version: 1.4.0
+Current version: 1.4.1
 
 Use it like this:
 
