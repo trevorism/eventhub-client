@@ -25,8 +25,8 @@ repositories {
 }
 
 dependencies {
-	compile 'com.trevorism:http-utils:1.0.1'
-    compile 'com.trevorism:secure-utils:1.0.1'
+	compile 'com.trevorism:http-utils:1.0.2'
+    compile 'com.trevorism:secure-utils:1.0.2'
 
     compile 'org.apache.httpcomponents:httpclient:4.5.10'
 	compile 'com.google.code.gson:gson:2.8.6'
