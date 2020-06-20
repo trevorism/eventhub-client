@@ -1,0 +1,45 @@
+package com.trevorism.event;
+
+import com.trevorism.http.util.ResponseUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+
+/**
+ * @author tbrooks
+ */
+public class PingingEventProducer<T> extends EventhubProducer<T> {
+
+    private static final int PING_WAIT_MILLIS = 15000;
+
+    @Override
+    public void sendEvent(String topic, T event, String correlationId) {
+        ping();
+        super.sendEvent(topic, event, correlationId);
+    }
+
+    private void ping() {
+        try {
+            //ping the API to wake it up since it is not always on
+            sendPingRequest();
+        }catch (Exception e){
+            try {
+                Thread.sleep(PING_WAIT_MILLIS);
+                sendPingRequest();
+            } catch (Exception ie) {
+                throw new RuntimeException("Interrupted failure", ie);
+            }
+        }
+    }
+
+    private void sendPingRequest() {
+        CloseableHttpResponse response = headersClient.get(EVENT_BASE_URL + "/ping", null);
+        String pong = ResponseUtils.getEntity(response);
+        ResponseUtils.closeSilently(response);
+        throwPingExceptionIfResponseNotPong(pong);
+    }
+
+    private void throwPingExceptionIfResponseNotPong(String pong) {
+        if(!"pong".equals(pong))
+            throw new RuntimeException("Unable to ping " + EVENT_BASE_URL);
+    }
+
+}
