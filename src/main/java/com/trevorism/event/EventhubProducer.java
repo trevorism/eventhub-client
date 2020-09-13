@@ -17,7 +17,6 @@ import java.util.Map;
 public abstract class EventhubProducer<T> implements EventProducer<T> {
 
     protected HeadersHttpClient headersClient = new HeadersJsonHttpClient();
-    private PasswordProvider passwordProvider = new PasswordProvider();
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
 
     @Override
@@ -73,7 +72,7 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
         Map<String, String> headersMap = new HashMap<>();
         if(correlationId != null)
             headersMap.put(HeadersHttpClient.CORRELATION_ID_HEADER_KEY, correlationId);
-        headersMap.put(PasswordProvider.AUTHORIZATION_HEADER, passwordProvider.getPassword());
+        headersMap.put("Authorization", PasswordProvider.getInstance().getPassword());
         return headersMap;
     }
 

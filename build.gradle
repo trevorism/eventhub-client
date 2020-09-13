@@ -6,7 +6,7 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath 'com.trevorism:gradle-release-plugin:0.3.0'
+		classpath 'com.trevorism:gradle-release-plugin:0.4.0'
 	}
 }
 
@@ -25,14 +25,14 @@ repositories {
 }
 
 dependencies {
-	compile 'com.trevorism:http-utils:1.0.2'
-    compile 'com.trevorism:secure-utils:1.0.2'
+	implementation 'com.trevorism:http-utils:1.0.2'
+	implementation 'com.trevorism:secure-utils:3.0.0'
 
-    compile 'org.apache.httpcomponents:httpclient:4.5.10'
-	compile 'com.google.code.gson:gson:2.8.6'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.12'
+	implementation 'com.google.code.gson:gson:2.8.6'
 
-	testCompile 'junit:junit:4.12'
-	testCompile 'org.codehaus.groovy:groovy-all:2.5.8'
+	testImplementation 'junit:junit:4.12'
+	testImplementation 'org.codehaus.groovy:groovy-all:2.5.8'
 
 }
 
