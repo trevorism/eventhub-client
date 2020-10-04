@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.trevorism.http.headers.HeadersHttpClient;
 import com.trevorism.http.headers.HeadersJsonHttpClient;
 import com.trevorism.http.util.ResponseUtils;
+import com.trevorism.https.DefaultSecureHttpClient;
+import com.trevorism.https.SecureHttpClient;
 import com.trevorism.secure.PasswordProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
@@ -16,7 +18,7 @@ import java.util.Map;
  */
 public abstract class EventhubProducer<T> implements EventProducer<T> {
 
-    protected HeadersHttpClient headersClient = new HeadersJsonHttpClient();
+    protected SecureHttpClient httpClient = new DefaultSecureHttpClient();
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
 
     @Override
@@ -56,25 +58,6 @@ public abstract class EventhubProducer<T> implements EventProducer<T> {
     }
 
     private String emitCorrelatedEvent(String url, String json, String correlationId) {
-        CloseableHttpResponse response = null;
-        try {
-            Map<String, String> headersMap = createHeaderMap(correlationId);
-            response = headersClient.post(url, json, headersMap);
-            return ResponseUtils.getEntity(response);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }finally{
-            ResponseUtils.closeSilently(response);
-        }
+        return httpClient.post(url, json, correlationId);
     }
-
-    private Map<String, String> createHeaderMap(String correlationId) {
-        Map<String, String> headersMap = new HashMap<>();
-        if(correlationId != null)
-            headersMap.put(HeadersHttpClient.CORRELATION_ID_HEADER_KEY, correlationId);
-        headersMap.put("Authorization", PasswordProvider.getInstance().getPassword());
-        return headersMap;
-    }
-
-
 }

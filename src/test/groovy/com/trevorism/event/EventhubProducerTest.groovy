@@ -2,6 +2,7 @@ package com.trevorism.event
 
 import com.trevorism.event.model.WorkComplete
 import com.trevorism.http.headers.HeadersHttpClient
+import com.trevorism.https.SecureHttpClient
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.entity.StringEntity
 import org.junit.Test
@@ -11,27 +12,23 @@ import org.junit.Test
  */
 class EventhubProducerTest {
 
-    private final pingResponse = [getEntity: { new StringEntity("pong") }] as CloseableHttpResponse
-    private final postResponse = [getEntity: { new StringEntity("true") }] as CloseableHttpResponse
-
     @Test
     void testSendEvent() {
         EventProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
-        eventhubProducer.headersClient = [get: { url, map -> return pingResponse }, post: { url, json, map ->
+        eventhubProducer.httpClient = [get: { url -> return "pong" }, post: { url, json, map ->
             assert url == "https://event.trevorism.com/api/testTopic"
-            return postResponse
-        }] as HeadersHttpClient
+            return "true"
+        }] as SecureHttpClient
         eventhubProducer.sendEvent("testTopic", new WorkComplete(), null)
     }
 
     @Test
     void testSendCorrelatedEvent() {
         EventProducer<WorkComplete> eventhubProducer = new PingingEventProducer<>()
-        eventhubProducer.headersClient = [get: { url, map -> return pingResponse }, post: { url, json, map ->
+        eventhubProducer.httpClient = [get: { url -> return "pong" }, post: { url, json, map ->
             assert url == "https://event.trevorism.com/api/testTopic"
-            assert map["X-Correlation-ID"] == "12345"
-            return postResponse
-        }] as HeadersHttpClient
+            return "true"
+        }] as SecureHttpClient
         eventhubProducer.sendEvent("testTopic", new WorkComplete(), "12345")
     }
 

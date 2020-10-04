@@ -31,9 +31,7 @@ public class PingingEventProducer<T> extends EventhubProducer<T> {
     }
 
     private void sendPingRequest() {
-        CloseableHttpResponse response = headersClient.get(EVENT_BASE_URL + "/ping", null);
-        String pong = ResponseUtils.getEntity(response);
-        ResponseUtils.closeSilently(response);
+        String pong = httpClient.get(EVENT_BASE_URL + "/ping");
         throwPingExceptionIfResponseNotPong(pong);
     }
 
