@@ -8,7 +8,7 @@
 
 Java client for sending events to [trevorism eventhub](https://github.com/trevorism/eventhub)
 
-Current version: 2.2.0
+Current version: 2.3.0
 
 ## How to Use 
 ```

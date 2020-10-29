@@ -1,6 +1,6 @@
 package com.trevorism.event;
 
-import com.trevorism.https.token.ObtainTokenStrategy;
+import com.trevorism.https.SecureHttpClient;
 
 /**
  * @author tbrooks
@@ -13,8 +13,8 @@ public class PingingEventProducer<T> extends EventhubProducer<T> {
         super();
     }
 
-    public PingingEventProducer(ObtainTokenStrategy strategy) {
-        super(strategy);
+    public PingingEventProducer(SecureHttpClient httpClient) {
+        super(httpClient);
     }
 
     @Override
