@@ -1,7 +1,6 @@
 package com.trevorism.event;
 
-import com.trevorism.http.util.ResponseUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import com.trevorism.https.token.ObtainTokenStrategy;
 
 /**
  * @author tbrooks
@@ -9,6 +8,14 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 public class PingingEventProducer<T> extends EventhubProducer<T> {
 
     private static final int PING_WAIT_MILLIS = 15000;
+
+    public PingingEventProducer() {
+        super();
+    }
+
+    public PingingEventProducer(ObtainTokenStrategy strategy) {
+        super(strategy);
+    }
 
     @Override
     public void sendEvent(String topic, T event, String correlationId) {
