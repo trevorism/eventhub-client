@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.trevorism.https.DefaultSecureHttpClient;
 import com.trevorism.https.SecureHttpClient;
-import com.trevorism.https.SecureHttpClientBase;
-import com.trevorism.https.token.ObtainTokenStrategy;
 
 /**
  * @author tbrooks

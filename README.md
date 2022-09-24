@@ -1,6 +1,5 @@
 # eventhub-client
-![Jenkins](https://img.shields.io/jenkins/build/http/trevorism-build.eastus.cloudapp.azure.com/eventhub-client)
-![Jenkins Coverage](https://img.shields.io/jenkins/coverage/jacoco/http/trevorism-build.eastus.cloudapp.azure.com/eventhub-client)
+![Build](https://github.com/trevorism/eventhub-client/actions/workflows/build.yml/badge.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/trevorism/eventhub-client)
 ![GitHub language count](https://img.shields.io/github/languages/count/trevorism/eventhub-client)
 ![GitHub top language](https://img.shields.io/github/languages/top/trevorism/eventhub-client)
@@ -8,7 +7,7 @@
 
 Java client for sending events to [trevorism eventhub](https://github.com/trevorism/eventhub)
 
-Current version: 2.3.0
+Current [Version](https://github.com/trevorism/eventhub-client/releases/latest)
 
 ## How to Use 
 ```
