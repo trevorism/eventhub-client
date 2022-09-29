@@ -8,7 +8,7 @@ import com.trevorism.https.SecureHttpClient;
 /**
  * @author tbrooks
  */
-public abstract class EventhubProducer<T> implements EventProducer<T> {
+public class EventhubProducer<T> implements EventProducer<T> {
 
     protected SecureHttpClient httpClient;
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
